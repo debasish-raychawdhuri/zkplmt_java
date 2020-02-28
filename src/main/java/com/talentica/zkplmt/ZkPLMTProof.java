@@ -12,11 +12,10 @@ public class ZkPLMTProof implements Serializable {
         this.proof = new ScalarPair[vectors.length];
         Scalar rightSum = Scalar.ZERO;
         for (int i = 0; i < vectors.length; i++) {
-            ScalarPair scalarPair = Util.randomScalarPair();
-            proof[i] = scalarPair;
-            if (i==index){
-                proof[i].right = Scalar.ZERO;
-            }
+            Scalar left = Util.randomScalar();
+            Scalar right = Util.chooseScalarIfEqualBranchless(i,index, Scalar.ZERO, Util.randomScalar());
+            ScalarPair scalarPair = new ScalarPair(left, right);
+            proof[i]=scalarPair;
             rightSum = rightSum.add(scalarPair.getRight());
 
         }

@@ -32,6 +32,21 @@ public class Util {
         return Math.abs(random.nextInt()) % mod;
     }
 
+    public static Scalar chooseScalarIfEqualBranchless(int lhs, int rhs, Scalar ifEq, Scalar ifNEq){
+        long lhsl = lhs;
+        long rhsl = rhs;
+        long diff = lhsl - rhsl;
+        long prod = diff * (-diff); //must be negative if not equal, positive otherwise.
+        byte bd = (byte)(prod >>> 63);
+        byte [] buf = new byte[32];
+        for(int i=31;i>0;i--){
+            buf[i]=0;
+        }
+        buf[0] = bd;
+        Scalar b = Scalar.fromBytesModOrder(buf);
+        return b.multiply(ifNEq).add( Scalar.ONE.subtract(b).multiply(ifEq));
+    }
+
     public static byte[] hashOfPoints(RistrettoElement[] points){
         MessageDigest md = null;
         try {
