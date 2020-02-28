@@ -26,11 +26,20 @@ public class ZkPLMTProofTest {
 
     @Test
     public void testZkPLMTFail2x2(){
+        int tupleLength = 2;
+        int numTuples = 2;
+        testZkPLMT(tupleLength, numTuples);
+        testZkPLMTFail(tupleLength, numTuples);
+    }
+
+    @Test
+    public void testZkPLMTFail10x10(){
         int tupleLength = 10;
         int numTuples = 10;
         testZkPLMT(tupleLength, numTuples);
         testZkPLMTFail(tupleLength, numTuples);
     }
+
 
     public void testZkPLMT(int tupleLength, int numTuples){
         VectorTuple[] tuples = new VectorTuple[numTuples];
