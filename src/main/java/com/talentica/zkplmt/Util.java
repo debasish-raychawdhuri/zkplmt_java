@@ -1,3 +1,13 @@
+/*
+ * Copyright  2020 Talentica Software Pvt. Ltd.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package com.talentica.zkplmt;
 
 import cafe.cryptography.curve25519.RistrettoElement;
@@ -33,18 +43,16 @@ public class Util {
     }
 
     public static Scalar chooseScalarIfEqualBranchless(int lhs, int rhs, Scalar ifEq, Scalar ifNEq){
-        long lhsl = lhs;
-        long rhsl = rhs;
-        long diff = lhsl - rhsl;
-        long prod = diff * (-diff); //must be negative if not equal, positive otherwise.
-        byte bd = (byte)(prod >>> 63);
+        int diff = lhs - rhs;
+        int bi = diff | (-diff); //must be negative if not equal, zero otherwise.
+        byte bd = (byte)(bi >>> 63);
         byte [] buf = new byte[32];
         for(int i=31;i>0;i--){
             buf[i]=0;
         }
         buf[0] = bd;
         Scalar b = Scalar.fromBytesModOrder(buf);
-        return b.multiply(ifNEq).add( Scalar.ONE.subtract(b).multiply(ifEq));
+        return b.multiplyAndAdd(ifNEq, Scalar.ONE.subtract(b).multiply(ifEq));
     }
 
     public static byte[] hashOfPoints(RistrettoElement[] points){
